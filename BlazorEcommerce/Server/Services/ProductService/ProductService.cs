@@ -53,10 +53,14 @@ namespace BlazorEcommerce.Server.Services.ProductService
         {
             var response = new ServiceResponse<List<Product>>
             {
-                Data = await _context.Products
-                .Where(p => p.Category.Url.ToLower().Equals(categoryUrl.ToLower()))
-                .Include(p => p.Variants)
-                .ToListAsync()
+                //Data = await _context.Products
+                //.Where(p => p.Category.Url.ToLower().Equals(categoryUrl.ToLower()))
+                //.Include(p => p.Variants)
+                //.ToListAsync()
+                Data = await _context.Products.
+                Where(p => p.Category != null && (categoryUrl.ToLower() == "all" || p.Category.Url.ToLower().Equals(categoryUrl.ToLower())))
+                .Include(p => p.Variants).ToListAsync()
+
             };
         return response;
         }
