@@ -14,6 +14,8 @@
         public int CurrentPage { get; set; } = 1;
         public int PageCount { get; set; } = 0;
         public string LastSearchText { get; set; }=string.Empty;
+        public string CurrentCategory { get; set; } = string.Empty;
+
 
         public event Action ProductsChanged;
 
@@ -23,16 +25,39 @@
             return result;
         }
 
-        public async Task GetProducts(string? categoryUrl = null)
+        public async Task GetProducts(int page, string? categoryUrl = null)
         {
-            var result =categoryUrl== null ?
-                await _http.GetFromJsonAsync<ServiceResponse<List<Product>>>("api/product/featured") :
-                await _http.GetFromJsonAsync<ServiceResponse<List<Product>>>($"api/product/category/{categoryUrl}");
-            if (result != null && result.Data != null)
-            Products = result.Data;
-            CurrentPage = 1;
-            PageCount = 0;
-            if(Products.Count==0)
+            //var result =categoryUrl== null ?
+            //    await _http.GetFromJsonAsync<ServiceResponse<List<Product>>>("api/product/featured") :
+            //    await _http.GetFromJsonAsync<ServiceResponse<List<Product>>>($"api/product/category/{categoryUrl}");
+            //if (result != null && result.Data != null)
+            //Products = result.Data;
+            //CurrentPage = 1;
+            //PageCount = 0;
+            //if(Products.Count==0)
+            //{
+            //    Message = "No Products found";
+            //}
+            //ProductsChanged.Invoke();
+            ServiceResponse<ProductSearchResult>? result;
+            CurrentCategory = categoryUrl ?? string.Empty;
+            LastSearchText = string.Empty;
+            if (categoryUrl == null)
+            {
+                var dataResult = await _http.GetFromJsonAsync<ServiceResponse<List<Product>>>("api/product/featured");
+                result = new ServiceResponse<ProductSearchResult>() { Data = new ProductSearchResult() { Products = dataResult?.Data ?? new List<Product>() } };
+            }
+            else
+            {
+                result = await _http.GetFromJsonAsync<ServiceResponse<ProductSearchResult>>($"api/product/category/{categoryUrl.ToLower()}/{page}");
+            }
+            if (result?.Data != null)
+            {
+                Products = result.Data.Products ?? new List<Product>();
+                CurrentPage = result.Data.CurrentPage;
+                PageCount = result.Data.Pages;
+            }
+            if (Products.Count == 0)
             {
                 Message = "No Products found";
             }
@@ -48,6 +73,7 @@
 
         public async Task SearchProducts(string searchText,int page)
         {
+            CurrentCategory = string.Empty;
             LastSearchText = searchText;
             var result = await _http
                 .GetFromJsonAsync<ServiceResponse<ProductSearchResult>>($"api/product/search/{searchText}/{page}");

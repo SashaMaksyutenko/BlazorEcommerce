@@ -1,4 +1,6 @@
 ﻿
+using Microsoft.AspNetCore.Mvc.RazorPages;
+
 namespace BlazorEcommerce.Server.Services.ProductService
 {
     public class ProductService : IProductService
@@ -49,20 +51,47 @@ namespace BlazorEcommerce.Server.Services.ProductService
             return response;
         }
 
-        public async Task<ServiceResponse<List<Product>>> GetProductsByCategory(string categoryUrl)
+        public async Task<ServiceResponse<ProductSearchResult>> GetProductsByCategory(string categoryUrl, int page)
         {
-            var response = new ServiceResponse<List<Product>>
-            {
-                //Data = await _context.Products
-                //.Where(p => p.Category.Url.ToLower().Equals(categoryUrl.ToLower()))
-                //.Include(p => p.Variants)
-                //.ToListAsync()
-                Data = await _context.Products.
-                Where(p => p.Category != null && (categoryUrl.ToLower() == "all" || p.Category.Url.ToLower().Equals(categoryUrl.ToLower())))
-                .Include(p => p.Variants).ToListAsync()
+            //    var response = new ServiceResponse<List<Product>>
+            //    {
+            //        //Data = await _context.Products
+            //        //.Where(p => p.Category.Url.ToLower().Equals(categoryUrl.ToLower()))
+            //        //.Include(p => p.Variants)
+            //        //.ToListAsync()
+            //        Data = await _context.Products.
+            //        Where(p => p.Category != null && (categoryUrl.ToLower() == "all" || p.Category.Url.ToLower().Equals(categoryUrl.ToLower())))
+            //        .Include(p => p.Variants).ToListAsync()
 
+            //    };
+            //return response;
+            var pageResults = 2f;
+            var products = await _context.Products.Where(p => p.Category != null
+
+                                && (categoryUrl.ToLower() == "all"
+
+                                    || p.Category.Url.ToLower().Equals(categoryUrl.ToLower())))
+
+                            .Include(p => p.Variants).ToListAsync();
+
+            var pageCount = Math.Ceiling(products.Count / pageResults);
+
+            return new ServiceResponse<ProductSearchResult>
+
+            {
+                Data = new ProductSearchResult
+
+                {
+                    Products = products
+
+                                .Skip((page - 1) * (int)pageResults)
+
+                                .Take((int)pageResults)
+                    .ToList(),
+                    CurrentPage = page,
+                    Pages = (int)pageCount
+                }
             };
-        return response;
         }
 
         public async Task<ServiceResponse<List<string>>> 

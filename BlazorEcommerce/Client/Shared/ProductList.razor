@@ -26,13 +26,15 @@ else
 </li>
     }
 </ul>
-    for(int i=1;i<=ProductService.PageCount;i++)
-    {
-    <a class="btn
-        page-selection
-        @(i == ProductService.CurrentPage ? "btn-info" : "btn-outline-info")"
-        href="/search/@ProductService.LastSearchText/@i">@i</a>
-    }
+    for (int i = 1; i <= ProductService.PageCount; i++)
+ {
+     <a class="btn
+     page-selection
+     @(i == ProductService.CurrentPage ? "btn-info" : "btn-outline-info")"
+href="@(ProductService.LastSearchText != string.Empty ?
+         string.Format("/search/{0}/{1}", @ProductService.LastSearchText ,i) :
+         string.Format("/{0}/{1}", ProductService.CurrentCategory , i))">@i</a>
+ }
 }
 @code {
     protected override void OnInitialized()
