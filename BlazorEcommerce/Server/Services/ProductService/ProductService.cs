@@ -33,7 +33,7 @@ namespace BlazorEcommerce.Server.Services.ProductService
             if(product==null)
             {
                 response.Success=false;
-                response.Messagge = "Sorry, but this product doen't exist.";
+                response.Message = "Sorry, but this product doen't exist.";
             }
             else
             {
