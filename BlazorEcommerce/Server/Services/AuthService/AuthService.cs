@@ -24,7 +24,7 @@ namespace BlazorEcommerce.Server.Services.AuthService
             user.PasswordSalt=passwordSalt;
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
-            return new ServiceResponse<int> { Data = user.Id };
+            return new ServiceResponse<int> { Data = user.Id,Message="registration successfull!" };
         }
 
         public async Task<bool> UserExists(string email)
