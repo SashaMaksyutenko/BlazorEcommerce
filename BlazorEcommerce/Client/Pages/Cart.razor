@@ -1,6 +1,6 @@
 ﻿@page "/cart"
 @inject ICartService CartService
-
+@inject IOrderService OrderService
 <PageTitle>Shopping Cart</PageTitle>
 
 <h3>Shopping Cart</h3>
@@ -8,6 +8,10 @@
 @if (cartProducts == null || cartProducts.Count==0)
 {
     <span>@message</span>
+}
+else if(orderPlaced)
+{
+    <span>Thank you for your order! You can check your orders<a href="orders">here</a>.</span>
 }
 else
 {
@@ -18,7 +22,7 @@ else
                 <div class="image-wrapper">
                     <img src="@product.ImageUrl" class="image"/>
             </div>
-            <div classclass="name">
+            <div class="name">
                  <h5><a href="/product/@product.ProductId">@product.Title</a></h5>  
                  <span>@product.ProductType</span><br/>
                  <input type="number" value="@product.Quantity"
@@ -37,6 +41,7 @@ else
             Total (@cartProducts.Count):$@cartProducts.Sum(product=>@product.Price*product.Quantity)
         </div>
     </div>
+    <buton @onclick="PlaceOrder" class="btn alert-success float-end mt-1">Place Order</buton>
 }
         
 @code {
@@ -44,9 +49,10 @@ else
     //adding items on a cart
     List<CartProductResponse> cartProducts = null;
     string message = "Loading cart...";
-
+    bool orderPlaced = false;
     protected override async Task OnInitializedAsync()
     {
+        orderPlaced = false;
         await LoadCart();
     }
 
@@ -73,5 +79,11 @@ else
         if (product.Quantity < 1)
             product.Quantity = 1;
         await CartService.UpdateQuantity(product);
+    }
+    private async Task PlaceOrder()
+    {
+        await OrderService.PlaceOrder();
+        await CartService.GetCartItemsCount();
+        orderPlaced = true;
     }
 }
