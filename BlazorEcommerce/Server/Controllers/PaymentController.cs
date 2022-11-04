@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BlazorEcommerce.Server.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class PaymentController : ControllerBase
     {
         private readonly IPaymentService _paymentService;
