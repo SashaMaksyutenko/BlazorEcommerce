@@ -3,35 +3,37 @@
 @page "/{categoryUrl}"
 @page "/{categoryUrl}/{page:int}"
 @inject IProductService ProductService
+
 <PageTitle>My Shop</PageTitle>
 
-@if(SearchText == null && CategoryUrl == null)
+@if (SearchText == null && CategoryUrl == null)
 {
-    <FeaturedProducts/>
+        <FeaturedProducts />
 }
 else
 {
-<ProductList/>
+        <ProductList />
 }
 
-@code{
+@code {
     [Parameter]
     public string? CategoryUrl { get; set; } = null;
+
     [Parameter]
     public string? SearchText { get; set; } = null;
+
     [Parameter]
     public int Page { get; set; } = 1;
+
     protected override async Task OnParametersSetAsync()
     {
-        if(SearchText != null)
+        if (SearchText != null)
         {
-            await ProductService.SearchProducts(SearchText,Page);
-            
+            await ProductService.SearchProducts(SearchText, Page);
         }
-        
         else
         {
-            await ProductService.GetProducts(Page, CategoryUrl);        }
-
+            await ProductService.GetProducts(Page,CategoryUrl);
+        }
     }
 }

@@ -8,12 +8,12 @@
         {
             _http = http;
         }
-        public List<Product> Products { get; set; }=new List<Product>();
+        public List<Product> Products { get; set; } = new List<Product>();
         public string Message { get; set; } = "Loading Products...";
 
         public int CurrentPage { get; set; } = 1;
         public int PageCount { get; set; } = 0;
-        public string LastSearchText { get; set; }=string.Empty;
+        public string LastSearchText { get; set; } = string.Empty;
         public string CurrentCategory { get; set; } = string.Empty;
 
 
@@ -21,7 +21,7 @@
 
         public async Task<ServiceResponse<Product>> GetProductById(int productId)
         {
-            var result = await _http.GetFromJsonAsync <ServiceResponse<Product>>($"api/product/{productId}");
+            var result = await _http.GetFromJsonAsync<ServiceResponse<Product>>($"api/product/{productId}");
             return result;
         }
 
@@ -71,7 +71,7 @@
             return result.Data;
         }
 
-        public async Task SearchProducts(string searchText,int page)
+        public async Task SearchProducts(string searchText, int page)
         {
             CurrentCategory = string.Empty;
             LastSearchText = searchText;
@@ -83,8 +83,8 @@
                 CurrentPage = result.Data.CurrentPage;
                 PageCount = result.Data.Pages;
             }
-                
-            if(Products.Count==0)
+
+            if (Products.Count == 0)
             {
                 Message = "No products found.";
             }

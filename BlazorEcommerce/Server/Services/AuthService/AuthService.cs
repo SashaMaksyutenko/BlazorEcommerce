@@ -10,7 +10,7 @@ namespace BlazorEcommerce.Server.Services.AuthService
         private readonly DataContext _context;
         private readonly IConfiguration _configuration;
         private readonly IHttpContextAccessor _httpContextAccessor;
-            
+
         public AuthService(DataContext context,
             IConfiguration configuration,
             IHttpContextAccessor httpContextAccessor)
@@ -19,17 +19,17 @@ namespace BlazorEcommerce.Server.Services.AuthService
             _configuration = configuration;
             _httpContextAccessor = httpContextAccessor;
         }
-        public async Task<ServiceResponse<string>>Login(string email, string password)
+        public async Task<ServiceResponse<string>> Login(string email, string password)
         {
             var response = new ServiceResponse<string>();
             var user = await _context.Users
                 .FirstOrDefaultAsync(x => x.Email.ToLower().Equals(email.ToLower()));
-            if(user==null)
+            if (user == null)
             {
                 response.Success = false;
                 response.Message = "User not found.";
             }
-            else if(!VerifyPasswordHash(password, user.PasswordHash,user.PasswordSalt))
+            else if (!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
             {
                 response.Success = false;
                 response.Message = "wrong password.";
@@ -42,7 +42,7 @@ namespace BlazorEcommerce.Server.Services.AuthService
         }
         public async Task<ServiceResponse<int>> Register(User user, string password)
         {
-            if(await UserExists(user.Email))
+            if (await UserExists(user.Email))
             {
                 return new ServiceResponse<int>
                 {
@@ -51,34 +51,34 @@ namespace BlazorEcommerce.Server.Services.AuthService
                 };
             }
             CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
-            user.PasswordHash=passwordHash;
-            user.PasswordSalt=passwordSalt;
+            user.PasswordHash = passwordHash;
+            user.PasswordSalt = passwordSalt;
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
-            return new ServiceResponse<int> { Data = user.Id,Message="registration successfull!" };
+            return new ServiceResponse<int> { Data = user.Id, Message = "registration successfull!" };
         }
 
         public async Task<bool> UserExists(string email)
         {
-            if(await _context.Users.AnyAsync(user=>user.Email.ToLower()           
+            if (await _context.Users.AnyAsync(user => user.Email.ToLower()
                 .Equals(email.ToLower())))
             {
                 return true;
             }
             return false;
         }
-        private void CreatePasswordHash(string password, out byte[]passwordHash,out byte[]passwordSalt)
+        private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
-            using(var hmac=new HMACSHA512())
+            using (var hmac = new HMACSHA512())
             {
                 passwordSalt = hmac.Key;
                 passwordHash = hmac
                     .ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
             }
         }
-        private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[]passwordSalt)
+        private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
         {
-            using(var hmac=new HMACSHA512(passwordSalt))
+            using (var hmac = new HMACSHA512(passwordSalt))
             {
                 var computedHash =
                     hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
@@ -106,7 +106,7 @@ namespace BlazorEcommerce.Server.Services.AuthService
         public async Task<ServiceResponse<bool>> ChangePassword(int userId, string newPassword)
         {
             var user = await _context.Users.FindAsync(userId);
-            if(user==null)
+            if (user == null)
             {
                 return new ServiceResponse<bool>
                 {
@@ -121,6 +121,15 @@ namespace BlazorEcommerce.Server.Services.AuthService
             return new ServiceResponse<bool> { Data = true, Message = "Password has been changed" };
         }
 
-        public int GetUserId() => int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));       
+        public int GetUserId() {
+            return int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+                }
+
+        public string GetUserEmail() => _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Name);
+
+        public async Task<User> GetUserByEmail(string email)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email.Equals(email));
+        }
     }
 }
