@@ -4,7 +4,7 @@
     {
         private readonly HttpClient _http;
         private readonly AuthenticationStateProvider _authentStateProvider;
-        public AuthService(HttpClient http, AuthenticationStateProvider authentStateProvider)
+        public AuthService (HttpClient http, AuthenticationStateProvider authentStateProvider)
         {
             _http = http;
             _authentStateProvider = authentStateProvider;   
