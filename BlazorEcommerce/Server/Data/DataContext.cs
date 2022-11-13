@@ -1,16 +1,18 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlazorEcommerce.Server.Data
 {
     public class DataContext:DbContext
     {
+
         public DataContext(DbContextOptions<DataContext>options):base(options)
         {
             
-            //Database.EnsureCreated();
+          //  Database.EnsureCreated();
         }
         protected override void OnModelCreating (ModelBuilder modelBuilder)
-        {
+        {            
             modelBuilder.Entity<CartItem>()
                 .HasKey(ci => new { ci.UserId, ci.ProductId, ci.ProductTypeId });
             modelBuilder.Entity<ProductVariant>().HasKey(p => new { p.ProductId, p.ProductTypeId });

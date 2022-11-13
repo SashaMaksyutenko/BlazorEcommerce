@@ -7,11 +7,11 @@ namespace BlazorEcommerce.Server.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class AdressController : ControllerBase
+    public class AddressController : ControllerBase
     {
         private readonly IAddressService _addressService;
 
-        public AdressController(IAddressService addressService)
+        public AddressController(IAddressService addressService)
         {
             _addressService = addressService;
         }
