@@ -49,6 +49,7 @@ namespace BlazorEcommerce.Server.Services.ProductService
                 .Where(p => !p.Deleted)
                 .Include(p => p.Variants.Where(v => !v.Deleted))
                 .ThenInclude(v => v.ProductType)
+                .Include(p=>p.Images)
                 .ToListAsync()                    
             };
             return response;
