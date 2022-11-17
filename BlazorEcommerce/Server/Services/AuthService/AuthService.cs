@@ -130,9 +130,6 @@ namespace BlazorEcommerce.Server.Services.AuthService
 
         public int GetUserId() {
             return int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-                }
-
-
-        
+                }       
     }
 }
