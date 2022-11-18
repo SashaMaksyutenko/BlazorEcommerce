@@ -13,8 +13,16 @@ else
                     <li class="media my-3">
                         <div class="media-img-wrapper mr-2">
                             <a href="/product/@product.Id">
-                                <img class="media-img" src="@product.ImageUrl" alt="@product.Title" />
-                            </a>
+                                @if(!string.IsNullOrEmpty(product.ImageUrl))
+                                {
+                                    <img class="media-img" src="@product.ImageUrl"alt="@product.Title"/>
+                                }
+                                else if(product.Images.Count>0)
+                                {
+                                    <img class="media-img" src="@product.Images[0].Data" alt="@product.Title" />
+
+                                }                              
+                    </a>
                         </div>
                         <div class="media-body">
                             <a href="/product/@product.Id">
@@ -30,13 +38,14 @@ else
         </ul>
     for (int i = 1; i <= ProductService.PageCount; i++)
     {
+        
              <a class="btn
-     page-selection
-     @(i == ProductService.CurrentPage ? "btn-info" : "btn-outline-info")"
-href="@(ProductService.LastSearchText != string.Empty ?
-         string.Format("/search/{0}/{1}", @ProductService.LastSearchText ,i) :
-         string.Format("/{0}/{1}", ProductService.CurrentCategory , i))">@i</a>
-    }
+                 @(i == ProductService.CurrentPage ? "btn-info" : "btn-outline-info")
+                 page-selection" href="@(
+                            string.IsNullOrEmpty(ProductService.LastSearchText) ?
+                            $"/{ProductService.CurrentCategory}/{i}" : 
+                                $"/search/{@ProductService.LastSearchText}/{i}" )">@i</a>
+     }
 }
 
 @code {
